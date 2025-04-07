@@ -19,7 +19,7 @@ def setup_promptsage():
         return False
     
     # Install required packages
-    pip install -q transformers datasets torch matplotlib seaborn wordcloud nltk
+    pip install transformers datasets torch matplotlib seaborn wordcloud nltk
 
     # Clone the repository (assuming it's on GitHub at this point)
     git clone https://github.com/fardeen0424/PromptSage.git
