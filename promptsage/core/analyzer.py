@@ -8,9 +8,9 @@ from typing import Dict, List, Optional, Tuple
 import nltk
 
 try:
-    nltk.data.find('tokenizers/punkt')
+    nltk.data.find('tokenizers/punkt_tab')
 except LookupError:
-    nltk.download('punkt', quiet=True)
+    nltk.download('punkt_tab', quiet=True)
     
 try:
     nltk.data.find('taggers/averaged_perceptron_tagger')
