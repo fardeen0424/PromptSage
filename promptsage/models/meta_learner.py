@@ -327,15 +327,18 @@ class MetaLearningOptimizer:
             "with precise steps ",
             "with concrete instances "
         ]
-        
+    
         # Choose a phrase
         phrase = random.choice(specificity_phrases)
-        
+    
+        # Split into words to respect word boundaries
+        words = prompt.split()
+    
         # Add phrase at appropriate position
         if "?" in prompt:
-            # If it's a question, insert before the question mark
-            parts = prompt.rsplit("?", 1)
-            return f"{parts[0]} {phrase}?{parts[1] if len(parts) > 1 else ''}"
+           # If it's a question, insert before the question mark
+           question_parts = prompt.rsplit("?", 1)
+           return f"{question_parts[0]} {phrase}?{question_parts[1] if len(question_parts) > 1 else ''}"
         else:
             # Otherwise add to the end
             prompt = prompt.rstrip()

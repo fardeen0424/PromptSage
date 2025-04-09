@@ -321,23 +321,23 @@ class EvolutionaryOptimizer:
     def _mutate_for_specificity(self, prompt: str) -> str:
         """Mutate to improve specificity."""
         specificity_phrases = [
-            " specifically ",
-            " in particular ",
-            " for example ",
-            " to be precise ",
-            " namely "
-        ]
+             " specifically ",
+             " in particular ",
+             " for example ",
+             " to be precise ",
+             " namely "
+         ]
     
         # Split into words to respect word boundaries
         words = prompt.split()
+    
         if len(words) < 2:
             return prompt + specificity_phrases[0].strip()
-        
-        # Insert at a word boundary, not a character position
-        insert_idx = max(1, min(len(words) - 1, len(words) // 2))
+    
+        # Insert at word boundary
+        insert_idx = random.randint(1, len(words) - 1)
         phrase = random.choice(specificity_phrases)
     
-        # Reassemble with new phrase at word boundary
         result = " ".join(words[:insert_idx]) + phrase + " ".join(words[insert_idx:])
         return result
     
@@ -367,7 +367,7 @@ class EvolutionaryOptimizer:
             
         return prompt  # No change if conditions not met
     
-    def _mutate_add_examples(self, prompt: str) -> str:
+    def _add_examples_request(self, prompt: str) -> str:
         """Mutate by requesting examples."""
         example_phrases = [
             ". Include specific examples.",
@@ -375,13 +375,13 @@ class EvolutionaryOptimizer:
             ". Use real-world examples.",
             ". Illustrate with examples."
         ]
-        
-        # Avoid adding if already there
-        if "example" in prompt.lower():
-            return prompt
-            
-        result = prompt.rstrip(".!?") + random.choice(example_phrases)
-        return result
+    
+        # Respect sentence endings
+        prompt = prompt.rstrip()
+        if any(prompt.endswith(end) for end in [".", "!", "?"]):
+            return f"{prompt}{random.choice(example_phrases)}"
+        else:
+            return f"{prompt}.{random.choice(example_phrases)}"
     
     def _calculate_fitness(
         self,
