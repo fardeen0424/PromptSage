@@ -327,17 +327,18 @@ class EvolutionaryOptimizer:
             " to be precise ",
             " namely "
         ]
+    
+        # Split into words to respect word boundaries
+        words = prompt.split()
+        if len(words) < 2:
+            return prompt + specificity_phrases[0].strip()
         
-        # Add a specificity phrase
-        if len(prompt) > 10:
-            insertion_point = random.randint(len(prompt) // 3, len(prompt) - 5)
-            phrase = random.choice(specificity_phrases)
-            result = prompt[:insertion_point] + phrase + prompt[insertion_point:]
-        else:
-            # Too short, just append
-            phrase = random.choice(specificity_phrases)
-            result = prompt + phrase
-            
+        # Insert at a word boundary, not a character position
+        insert_idx = max(1, min(len(words) - 1, len(words) // 2))
+        phrase = random.choice(specificity_phrases)
+    
+        # Reassemble with new phrase at word boundary
+        result = " ".join(words[:insert_idx]) + phrase + " ".join(words[insert_idx:])
         return result
     
     def _mutate_sentence_structure(self, prompt: str) -> str:
