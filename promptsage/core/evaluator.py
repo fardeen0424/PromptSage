@@ -37,25 +37,35 @@ class PromptEvaluator:
             
         # Load evaluation models for different metrics
         if use_cached_models:
-            # Load smaller models for specific evaluation tasks
+    # Load smaller models for specific evaluation tasks
+         try:
+            import transformers
+            # For coherence evaluation
             try:
-                import transformers
-                # For coherence evaluation
                 self.coherence_model = AutoModelForSequenceClassification.from_pretrained(
-                    "prithivida/coherence_model"
+                "prithivida/coherence_model"
                 ).to(self.device)
                 self.coherence_tokenizer = AutoTokenizer.from_pretrained("prithivida/coherence_model")
-                
-                # For factuality evaluation
+            except Exception as e:
+                print(f"Warning: Could not load coherence model: {e}")
+                self.coherence_model = None
+                self.coherence_tokenizer = None
+            
+            # For factuality evaluation
+            try:
                 self.factuality_model = AutoModelForSequenceClassification.from_pretrained(
                     "stanford-crfm/factuality-classifier"
                 ).to(self.device)
                 self.factuality_tokenizer = AutoTokenizer.from_pretrained("stanford-crfm/factuality-classifier")
-                
             except Exception as e:
-                print(f"Warning: Could not load all evaluation models: {e}")
-                self.coherence_model = None
+                print(f"Warning: Could not load factuality model: {e}")
                 self.factuality_model = None
+                self.factuality_tokenizer = None
+            
+         except Exception as e:
+            print(f"Warning: Could not load evaluation models: {e}")
+            self.coherence_model = None
+            self.factuality_model = None
     
     def evaluate(
         self, 

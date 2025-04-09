@@ -3,15 +3,15 @@ Prompt analyzer module for PromptSage
 """
 
 import re
-import nltk
 from typing import Dict, List, Optional, Tuple
-import numpy as np
+# Add this near the top of analyzer.py
+import nltk
 
-# Ensure necessary NLTK data is downloaded
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
     nltk.download('punkt', quiet=True)
+    
 try:
     nltk.data.find('taggers/averaged_perceptron_tagger')
 except LookupError:
