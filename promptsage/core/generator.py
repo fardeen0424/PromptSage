@@ -64,7 +64,8 @@ class PromptGenerator:
             return "[Generated response placeholder]"
         
         # Encode the prompt
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        inputs = {k: v.to(self.device) for k, v in inputs.items()}
         
         # Set generation parameters
         gen_kwargs = {

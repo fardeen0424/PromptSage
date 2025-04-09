@@ -292,6 +292,26 @@ class EvolutionaryOptimizer:
             mutation_fn = random.choice(mutation_types)
             return mutation_fn(prompt)
     
+    def _mutate_add_examples(self, prompt: str) -> str:
+        """Mutate by requesting examples."""
+        example_phrases = [
+            ". Include specific examples.",
+            ". Provide concrete examples.",
+            ". Use real-world examples.",
+            ". Illustrate with examples."
+        ]
+    
+        # Avoid adding if already there
+        if "example" in prompt.lower():
+            return prompt
+        
+        prompt = prompt.rstrip()
+        if prompt.endswith((".", "!", "?")):
+            return f"{prompt}{random.choice(example_phrases)}"
+        else:
+            return f"{prompt}.{random.choice(example_phrases)}"
+    
+    
     def _mutate_for_clarity(self, prompt: str) -> str:
         """Mutate to improve clarity."""
         # Replace vague words with more specific ones
