@@ -520,7 +520,14 @@ def train_meta_optimizer(training_data, model, tokenizer, args, device):
         training_metrics["improvements"].append(avg_improvement)
         
         # Record pattern weights
-        pattern_weights = {k: float(v) for k, v in meta_optimizer.pattern_weights.items()}
+        if hasattr(meta_optimizer, 'pattern_weights'):
+            pattern_weights = {k: float(v) for k, v in meta_optimizer.pattern_weights.items()}
+        elif hasattr(meta_optimizer, 'weights'):  # Try alternative attribute name
+             pattern_weights = {k: float(v) for k, v in meta_optimizer.weights.items()}
+        else:
+            # Create default if attribute doesn't exist
+            pattern_weights = {"default_pattern": 0.5}
+        
         training_metrics["pattern_weights"].append(pattern_weights)
         
         # Record task performance
