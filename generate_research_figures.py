@@ -1,8 +1,8 @@
 """
 PromptSage Visualization Generator
 
-Generates 20+ research-quality visualizations for the PromptSage paper
-without relying on the full training and evaluation pipeline.
+Generates 18 research-quality visualizations for the PromptSage paper
+using default matplotlib styles.
 """
 
 import os
@@ -12,27 +12,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import random
-from matplotlib.colors import LinearSegmentedColormap
-from matplotlib import cm
 from matplotlib.patches import Patch
 
 # Create output directory
 output_dir = "research_figures"
 os.makedirs(output_dir, exist_ok=True)
 
-# Use default matplotlib colors
-colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
-
-# Set up plotting style
-plt.style.use('seaborn-v0_8-whitegrid')
-plt.rcParams['font.family'] = 'DejaVu Sans'
-plt.rcParams['font.size'] = 12
-plt.rcParams['axes.titlesize'] = 16
-plt.rcParams['axes.labelsize'] = 14
-plt.rcParams['xtick.labelsize'] = 12
-plt.rcParams['ytick.labelsize'] = 12
-plt.rcParams['legend.fontsize'] = 12
-plt.rcParams['figure.titlesize'] = 20
+# Reset to matplotlib defaults
+plt.rcdefaults()
 
 # Generate synthetic data for visualizations
 def generate_synthetic_data():
@@ -136,8 +123,6 @@ def generate_synthetic_data():
     }
     
     # 6. Example prompts and optimizations
-    example_optimizations = []
-    
     examples = [
         {
             "task_type": "explanation",
@@ -279,18 +264,7 @@ def generate_synthetic_data():
         "optimized": [len(ex["optimized_prompt"].split()) for ex in example_optimizations],
     }
     
-    # 7. System architecture components
-    system_components = {
-        "Analyzer": "Analyzes prompt structure and characteristics",
-        "Optimizer": "Applies optimization strategies",
-        "Evaluator": "Evaluates prompt performance",
-        "Generator": "Generates optimized prompts",
-        "Meta-Learner": "Learns patterns across tasks",
-        "Evolution Engine": "Evolves prompts through genetic operations",
-        "Contrastive Module": "Identifies boundary cases"
-    }
-    
-    # 8. Ablation study data
+    # 7. Ablation study data
     ablation_results = {
         "Full System": 0.22,
         "No Meta-Learning": 0.15,
@@ -308,7 +282,6 @@ def generate_synthetic_data():
         "training_progress": training_progress,
         "example_optimizations": example_optimizations,
         "prompt_lengths": prompt_lengths,
-        "system_components": system_components,
         "ablation_results": ablation_results
     }
 
@@ -319,163 +292,88 @@ def generate_all_visualizations(data, output_dir):
     
     # Create plot functions for each visualization
     
-    # 1. System Architecture Diagram
-    def plot_system_architecture():
-        components = data["system_components"]
-        
-        fig, ax = plt.subplots(figsize=(12, 8))
-        
-        # Hide axes
-        ax.axis('off')
-        
-        # Create boxes for components
-        box_height = 0.12
-        box_width = 0.25
-        
-        # Core components
-        ax.add_patch(plt.Rectangle((0.375, 0.75), box_width, box_height, 
-                                  facecolor=colors[0], alpha=0.7, edgecolor='black'))
-        ax.text(0.5, 0.75 + box_height/2, "Analyzer", ha='center', va='center', fontweight='bold')
-        
-        ax.add_patch(plt.Rectangle((0.375, 0.6), box_width, box_height, 
-                                  facecolor=colors[1], alpha=0.7, edgecolor='black'))
-        ax.text(0.5, 0.6 + box_height/2, "Optimizer", ha='center', va='center', fontweight='bold')
-        
-        ax.add_patch(plt.Rectangle((0.375, 0.45), box_width, box_height, 
-                                  facecolor=colors[2], alpha=0.7, edgecolor='black'))
-        ax.text(0.5, 0.45 + box_height/2, "Evaluator", ha='center', va='center', fontweight='bold')
-        
-        ax.add_patch(plt.Rectangle((0.375, 0.3), box_width, box_height, 
-                                  facecolor=colors[3], alpha=0.7, edgecolor='black'))
-        ax.text(0.5, 0.3 + box_height/2, "Generator", ha='center', va='center', fontweight='bold')
-        
-        # Optimization strategies
-        ax.add_patch(plt.Rectangle((0.05, 0.45), box_width, box_height, 
-                                  facecolor=colors[4], alpha=0.7, edgecolor='black'))
-        ax.text(0.05 + box_width/2, 0.45 + box_height/2, "Meta-Learning", ha='center', va='center', fontweight='bold')
-        
-        ax.add_patch(plt.Rectangle((0.05, 0.6), box_width, box_height, 
-                                  facecolor=colors[5], alpha=0.7, edgecolor='black'))
-        ax.text(0.05 + box_width/2, 0.6 + box_height/2, "Evolution", ha='center', va='center', fontweight='bold')
-        
-        ax.add_patch(plt.Rectangle((0.05, 0.75), box_width, box_height, 
-                                  facecolor=colors[6], alpha=0.7, edgecolor='black'))
-        ax.text(0.05 + box_width/2, 0.75 + box_height/2, "Contrastive", ha='center', va='center', fontweight='bold')
-        
-        # Input/Output
-        ax.add_patch(plt.Rectangle((0.375, 0.9), box_width, box_height, 
-                                  facecolor='lightgray', alpha=0.7, edgecolor='black'))
-        ax.text(0.5, 0.9 + box_height/2, "Original Prompt", ha='center', va='center', fontweight='bold')
-        
-        ax.add_patch(plt.Rectangle((0.375, 0.15), box_width, box_height, 
-                                  facecolor='lightgray', alpha=0.7, edgecolor='black'))
-        ax.text(0.5, 0.15 + box_height/2, "Optimized Prompt", ha='center', va='center', fontweight='bold')
-        
-        # Knowledge base
-        ax.add_patch(plt.Rectangle((0.7, 0.45), box_width, box_height*2, 
-                                  facecolor=colors[7 % len(colors)], alpha=0.7, edgecolor='black'))
-        ax.text(0.7 + box_width/2, 0.45 + box_height, "Optimization\nPatterns", ha='center', va='center', fontweight='bold')
-        
-        # Arrows
-        ax.arrow(0.5, 0.9, 0, -0.04, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        ax.arrow(0.5, 0.75, 0, -0.04, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        ax.arrow(0.5, 0.6, 0, -0.04, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        ax.arrow(0.5, 0.45, 0, -0.04, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        ax.arrow(0.5, 0.3, 0, -0.04, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        
-        # Strategy connections
-        ax.arrow(0.3, 0.6, 0.07, 0, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        ax.arrow(0.3, 0.75, 0.07, -0.09, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        ax.arrow(0.3, 0.45, 0.07, 0.09, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        
-        # Knowledge base connections
-        ax.arrow(0.7, 0.6, -0.07, 0, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        ax.arrow(0.625, 0.6, 0.07, 0, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        
-        ax.set_title('PromptSage System Architecture', fontsize=20, fontweight='bold')
-        
-        plt.savefig(os.path.join(output_dir, "01_system_architecture.png"), dpi=300, bbox_inches='tight')
-        plt.close()
-    
-    # 2. Strategy Performance Comparison
+    # 1. Strategy Performance Comparison
     def plot_strategy_performance():
         strategies = list(data["strategy_performance"].keys())
         values = list(data["strategy_performance"].values())
         
         fig, ax = plt.subplots(figsize=(10, 6))
-        bars = ax.bar(strategies, values, color=colors)
+        bars = ax.bar(strategies, values)
         
         # Add value labels
         for bar, value in zip(bars, values):
             height = bar.get_height()
             ax.text(bar.get_x() + bar.get_width()/2., height + 0.01,
-                  f'{value:.4f}', ha='center', va='bottom', fontsize=12, fontweight='bold')
+                  f'{value:.4f}', ha='center', va='bottom')
         
         ax.set_xlabel("Optimization Strategy")
         ax.set_ylabel("Average Improvement")
-        ax.set_title("Overall Strategy Performance Comparison", fontweight='bold', fontsize=18)
+        ax.set_title("Strategy Performance Comparison")
         ax.grid(axis='y', linestyle='--', alpha=0.7)
         
-        plt.savefig(os.path.join(output_dir, "02_strategy_performance.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, "01_strategy_performance.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 3. Meta-Learning Training Progress
+    # 2. Meta-Learning Training Progress
     def plot_training_progress():
         training_data = data["training_progress"]
         
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
         
         # Plot improvement progression
-        ax1.plot(training_data["epochs"], training_data["improvements"], marker='o', linewidth=2, color=colors[0])
+        ax1.plot(training_data["epochs"], training_data["improvements"], marker='o')
         ax1.set_xlabel("Training Epoch")
         ax1.set_ylabel("Average Improvement")
-        ax1.set_title("Meta-Learning Training Progress", fontweight='bold')
+        ax1.set_title("Meta-Learning Training Progress")
         ax1.grid(True, linestyle='--', alpha=0.7)
         
         # Add value annotations
         for i, (x, y) in enumerate(zip(training_data["epochs"], training_data["improvements"])):
-            ax1.text(x, y + 0.01, f"{y:.4f}", ha='center', va='bottom', fontsize=10, fontweight='bold')
+            ax1.text(x, y + 0.01, f"{y:.4f}", ha='center', va='bottom')
         
         # Plot pattern weights
-        for i, (pattern, weights) in enumerate(training_data["pattern_weights"].items()):
+        for pattern, weights in training_data["pattern_weights"].items():
             label = pattern.replace("_", " ").title()
-            ax2.plot(training_data["epochs"], weights, marker='o', linewidth=2, label=label, color=colors[i % len(colors)])
+            ax2.plot(training_data["epochs"], weights, marker='o', label=label)
         
         ax2.set_xlabel("Training Epoch")
         ax2.set_ylabel("Pattern Weight")
-        ax2.set_title("Evolution of Pattern Weights", fontweight='bold')
+        ax2.set_title("Evolution of Pattern Weights")
         ax2.legend(loc='best')
         ax2.grid(True, linestyle='--', alpha=0.7)
         
-        plt.savefig(os.path.join(output_dir, "03_training_progress.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=2.0)
+        plt.savefig(os.path.join(output_dir, "02_training_progress.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 4. Metric-specific Improvements
+    # 3. Metric-specific Improvements
     def plot_metric_improvements():
         for i, (metric, strategies) in enumerate(data["metric_performance"].items()):
             strategies_list = list(strategies.keys())
             values = list(strategies.values())
             
             fig, ax = plt.subplots(figsize=(10, 6))
-            bars = ax.bar(strategies_list, values, color=colors)
+            bars = ax.bar(strategies_list, values)
             
             # Add value labels
             for bar, value in zip(bars, values):
                 height = bar.get_height()
                 ax.text(bar.get_x() + bar.get_width()/2., height + 0.01,
-                      f'{value:.4f}', ha='center', va='bottom', fontsize=12, fontweight='bold')
+                      f'{value:.4f}', ha='center', va='bottom')
             
             metric_title = metric.replace("_", " ").title()
             
             ax.set_xlabel("Optimization Strategy")
             ax.set_ylabel(f"{metric_title} Improvement")
-            ax.set_title(f"{metric_title} Improvement by Strategy", fontweight='bold', fontsize=18)
+            ax.set_title(f"{metric_title} Improvement by Strategy")
             ax.grid(axis='y', linestyle='--', alpha=0.7)
             
-            plt.savefig(os.path.join(output_dir, f"04_{i+1}_metric_{metric}.png"), dpi=300, bbox_inches='tight')
+            plt.tight_layout(pad=1.5)
+            plt.savefig(os.path.join(output_dir, f"03_{i+1}_metric_{metric}.png"), dpi=300, bbox_inches='tight')
             plt.close()
     
-    # 5. Task Performance Heatmap
+    # 4. Task Performance Heatmap
     def plot_task_heatmap():
         tasks = list(data["task_performance"].keys())
         strategies = list(next(iter(data["task_performance"].values())).keys())
@@ -494,43 +392,44 @@ def generate_all_visualizations(data, output_dir):
             matrix_data, 
             annot=True, 
             fmt=".4f", 
-            cmap="viridis", 
             xticklabels=strategies,
             yticklabels=tasks,
             linewidths=0.5,
             ax=ax
         )
         
-        ax.set_title("Task-Specific Optimization Performance", fontweight='bold', fontsize=18)
-        ax.set_xlabel("Strategy", fontsize=14)
-        ax.set_ylabel("Task Type", fontsize=14)
+        ax.set_title("Task-Specific Optimization Performance")
+        ax.set_xlabel("Strategy")
+        ax.set_ylabel("Task Type")
         
-        plt.savefig(os.path.join(output_dir, "05_task_heatmap.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "04_task_heatmap.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 6. Optimization Time Comparison
+    # 5. Optimization Time Comparison
     def plot_optimization_times():
         strategies = list(data["optimization_times"].keys())
         times = list(data["optimization_times"].values())
         
         fig, ax = plt.subplots(figsize=(10, 6))
-        bars = ax.bar(strategies, times, color=colors)
+        bars = ax.bar(strategies, times)
         
         # Add value labels
         for bar, value in zip(bars, times):
             height = bar.get_height()
             ax.text(bar.get_x() + bar.get_width()/2., height + 0.05,
-                  f'{value:.2f}s', ha='center', va='bottom', fontsize=12, fontweight='bold')
+                  f'{value:.2f}s', ha='center', va='bottom')
         
         ax.set_xlabel("Optimization Strategy")
         ax.set_ylabel("Average Optimization Time (seconds)")
-        ax.set_title("Strategy Optimization Time Comparison", fontweight='bold', fontsize=18)
+        ax.set_title("Optimization Time Comparison")
         ax.grid(axis='y', linestyle='--', alpha=0.7)
         
-        plt.savefig(os.path.join(output_dir, "06_optimization_times.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "05_optimization_times.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 7. Multi-metric Radar Chart
+    # 6. Multi-metric Radar Chart
     def plot_radar_chart():
         metrics = list(data["metric_performance"].keys())
         strategies = list(next(iter(data["metric_performance"].values())).keys())
@@ -560,23 +459,24 @@ def generate_all_visualizations(data, output_dir):
         
         # Set labels
         ax.set_xticks(angles[:-1])
-        ax.set_xticklabels(metric_labels, fontsize=12)
+        ax.set_xticklabels(metric_labels)
         
         # Plot each strategy
-        for i, (strategy, values) in enumerate(radar_data.items()):
+        for strategy, values in radar_data.items():
             values += values[:1]  # Close the loop
-            ax.plot(angles, values, linewidth=3, label=strategy, color=colors[i % len(colors)])
-            ax.fill(angles, values, alpha=0.25, color=colors[i % len(colors)])
+            ax.plot(angles, values, label=strategy)
+            ax.fill(angles, values, alpha=0.25)
         
         # Add legend
-        ax.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1), fontsize=14)
+        ax.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
         
-        plt.title("Multi-Metric Strategy Comparison", fontweight='bold', fontsize=18, pad=20)
+        plt.title("Multi-Metric Strategy Comparison", pad=20)
         
-        plt.savefig(os.path.join(output_dir, "07_radar_chart.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, "06_radar_chart.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 8. Example Optimizations Chart
+    # 7. Example Optimizations Chart
     def plot_example_improvements():
         examples = data["example_optimizations"]
         example_ids = [f"Ex {i+1}" for i in range(len(examples))]
@@ -585,11 +485,10 @@ def generate_all_visualizations(data, output_dir):
         
         # Create colormap based on strategies
         strategy_set = list(set(strategies))
-        strategy_colors = {strategy: colors[i % len(colors)] for i, strategy in enumerate(strategy_set)}
-        bar_colors = [strategy_colors[s] for s in strategies]
+        bar_colors = None  # Let matplotlib choose colors
         
         fig, ax = plt.subplots(figsize=(14, 8))
-        bars = ax.bar(example_ids, improvements, color=bar_colors)
+        bars = ax.bar(example_ids, improvements)
         
         # Add strategy annotations
         for i, (bar, strategy) in enumerate(zip(bars, strategies)):
@@ -599,8 +498,7 @@ def generate_all_visualizations(data, output_dir):
                 height + 0.01,
                 strategy,
                 ha='center', va='bottom', 
-                fontsize=10, rotation=45,
-                fontweight='bold'
+                rotation=45
             )
             
             # Add improvement value
@@ -609,24 +507,23 @@ def generate_all_visualizations(data, output_dir):
                 height/2,
                 f"{improvements[i]:.4f}",
                 ha='center', va='center', 
-                fontsize=11, color='white',
-                fontweight='bold'
+                color='white'
             )
         
         ax.set_xlabel("Examples")
         ax.set_ylabel("Improvement Score")
-        ax.set_title("Improvement Scores for Top Examples", fontweight='bold', fontsize=18)
+        ax.set_title("Improvement Scores for Examples")
         ax.grid(axis='y', linestyle='--', alpha=0.7)
         
-        # Add legend
-        legend_elements = [Patch(facecolor=color, label=strategy) 
-                          for strategy, color in strategy_colors.items()]
-        ax.legend(handles=legend_elements, loc='upper right', fontsize=12)
+        # Add legend for strategies
+        handles = [plt.Rectangle((0,0),1,1, color=bar.get_facecolor()) for bar in bars[:len(strategy_set)]]
+        ax.legend(handles, strategy_set, loc='upper right')
         
-        plt.savefig(os.path.join(output_dir, "08_example_improvements.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "07_example_improvements.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 9. Task Distribution Pie Chart
+    # 8. Task Distribution Pie Chart
     def plot_task_distribution():
         examples = data["example_optimizations"]
         task_counts = {}
@@ -640,24 +537,19 @@ def generate_all_visualizations(data, output_dir):
         fig, ax = plt.subplots(figsize=(10, 10))
         
         # Create pie chart
-        wedges, texts, autotexts = ax.pie(
+        ax.pie(
             counts, 
             labels=tasks,
-            autopct='%1.1f%%',
-            textprops={'fontsize': 14, 'fontweight': 'bold'},
-            colors=colors[:len(tasks)]
+            autopct='%1.1f%%'
         )
         
-        # Customize text
-        for autotext in autotexts:
-            autotext.set_fontweight('bold')
+        ax.set_title("Task Distribution in Examples")
         
-        ax.set_title("Task Distribution in Examples", fontweight='bold', fontsize=18)
-        
-        plt.savefig(os.path.join(output_dir, "09_task_distribution.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "08_task_distribution.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 10. Prompt Length Comparison
+    # 9. Prompt Length Comparison
     def plot_prompt_lengths():
         original_lengths = data["prompt_lengths"]["original"]
         optimized_lengths = data["prompt_lengths"]["optimized"]
@@ -667,29 +559,29 @@ def generate_all_visualizations(data, output_dir):
         
         # Plot original lengths
         ax.bar([x - 0.2 for x in examples], original_lengths, width=0.4, 
-               color=colors[0], label='Original Prompt')
+               label='Original Prompt')
         
         # Plot optimized lengths
         ax.bar([x + 0.2 for x in examples], optimized_lengths, width=0.4, 
-               color=colors[1], label='Optimized Prompt')
+               label='Optimized Prompt')
         
         # Add percentage increase labels
         for i, (orig, opt) in enumerate(zip(original_lengths, optimized_lengths)):
             increase = (opt - orig) / orig * 100
-            ax.text(i+1, opt + 1, f"+{increase:.1f}%", ha='center', va='bottom', 
-                   fontsize=10, fontweight='bold')
+            ax.text(i+1, opt + 1, f"+{increase:.1f}%", ha='center', va='bottom')
         
         ax.set_xlabel("Example Number")
         ax.set_ylabel("Prompt Length (words)")
-        ax.set_title("Prompt Length Comparison", fontweight='bold', fontsize=18)
+        ax.set_title("Prompt Length Comparison")
         ax.set_xticks(examples)
         ax.legend()
         ax.grid(axis='y', linestyle='--', alpha=0.7)
         
-        plt.savefig(os.path.join(output_dir, "10_prompt_lengths.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "09_prompt_lengths.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 11. Example Prompt Improvement Analysis
+    # 10. Example Prompt Improvement Analysis
     def plot_example_analysis():
         # Select one example to showcase in detail
         example = data["example_optimizations"][0]
@@ -698,38 +590,38 @@ def generate_all_visualizations(data, output_dir):
         ax.axis('off')  # Turn off axis
         
         # Title
-        ax.text(0.5, 0.95, "Prompt Optimization Case Study", ha='center', fontsize=20, fontweight='bold')
+        ax.text(0.5, 0.95, "Prompt Optimization Case Study", ha='center')
         
         # Original prompt
-        ax.text(0.05, 0.85, "Original Prompt:", fontsize=16, fontweight='bold')
-        ax.text(0.05, 0.8, example["original_prompt"], fontsize=14, wrap=True)
+        ax.text(0.05, 0.85, "Original Prompt:", weight='bold')
+        ax.text(0.05, 0.8, example["original_prompt"], wrap=True)
         
         # Add border around original prompt
         ax.add_patch(plt.Rectangle((0.04, 0.78), 0.92, 0.09, 
-                                  fill=False, edgecolor=colors[0], linewidth=2))
+                                  fill=False, linewidth=2))
         
         # Optimized prompt
-        ax.text(0.05, 0.7, "Optimized Prompt:", fontsize=16, fontweight='bold')
-        ax.text(0.05, 0.65, example["optimized_prompt"], fontsize=14, wrap=True)
+        ax.text(0.05, 0.7, "Optimized Prompt:", weight='bold')
+        ax.text(0.05, 0.65, example["optimized_prompt"], wrap=True)
         
         # Add border around optimized prompt
         ax.add_patch(plt.Rectangle((0.04, 0.63), 0.92, 0.09, 
-                                  fill=False, edgecolor=colors[1], linewidth=2))
+                                  fill=False, linewidth=2))
         
         # Strategy used
-        ax.text(0.05, 0.55, f"Strategy: {example['strategy']}", fontsize=16, fontweight='bold')
+        ax.text(0.05, 0.55, f"Strategy: {example['strategy']}", weight='bold')
         
         # Metrics improvements
-        ax.text(0.05, 0.5, "Metrics Improvement:", fontsize=16, fontweight='bold')
+        ax.text(0.05, 0.5, "Metrics Improvement:", weight='bold')
         
         y_pos = 0.45
         for metric, value in example["improvements"].items():
             metric_name = metric.replace("_", " ").title()
-            ax.text(0.1, y_pos, f"{metric_name}: +{value:.4f}", fontsize=14)
+            ax.text(0.1, y_pos, f"{metric_name}: +{value:.4f}")
             y_pos -= 0.05
         
         # Key optimizations
-        ax.text(0.05, 0.25, "Key Optimization Techniques:", fontsize=16, fontweight='bold')
+        ax.text(0.05, 0.25, "Key Optimization Techniques:", weight='bold')
         
         # Highlight what changed (simplified example)
         techniques = [
@@ -741,90 +633,38 @@ def generate_all_visualizations(data, output_dir):
         
         y_pos = 0.2
         for technique in techniques:
-            ax.text(0.1, y_pos, f"• {technique}", fontsize=14)
+            ax.text(0.1, y_pos, f"• {technique}")
             y_pos -= 0.05
         
-        plt.savefig(os.path.join(output_dir, "11_example_analysis.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "10_example_analysis.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 12. Optimization Process Flowchart
-    def plot_optimization_process():
-        fig, ax = plt.subplots(figsize=(12, 8))
-        ax.axis('off')  # Turn off axis
-        
-        # Create boxes for steps
-        box_height = 0.1
-        box_width = 0.3
-        
-        # Step boxes
-        steps = [
-            "1. Prompt Analysis", 
-            "2. Strategy Selection",
-            "3. Transformation Application",
-            "4. Response Generation",
-            "5. Performance Evaluation",
-            "6. Iteration & Selection"
-        ]
-        
-        y_positions = [0.85, 0.7, 0.55, 0.4, 0.25, 0.1]
-        
-        for i, (step, y) in enumerate(zip(steps, y_positions)):
-            ax.add_patch(plt.Rectangle((0.35, y), box_width, box_height, 
-                                      facecolor=colors[i % len(colors)], alpha=0.7, edgecolor='black'))
-            ax.text(0.5, y + box_height/2, step, ha='center', va='center', fontweight='bold', fontsize=14)
-            
-            # Add arrow between boxes
-            if i < len(steps) - 1:
-                ax.arrow(0.5, y, 0, -0.09, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        
-        # Add descriptive text
-        descriptions = [
-            "Extract prompt characteristics",
-            "Choose optimization approach",
-            "Apply transformations to prompt",
-            "Generate responses with LLM",
-            "Calculate improvement metrics",
-            "Select best optimized prompt"
-        ]
-        
-        for desc, y in zip(descriptions, y_positions):
-            ax.text(0.7, y + box_height/2, desc, ha='left', va='center', fontsize=12)
-        
-        # Feedback loop
-        ax.arrow(0.35, 0.15, -0.1, 0, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        ax.arrow(0.25, 0.15, 0, 0.35, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        ax.arrow(0.25, 0.5, 0.1, 0, head_width=0.02, head_length=0.02, fc='black', ec='black')
-        ax.text(0.15, 0.33, "Feedback\nLoop", ha='center', va='center', fontweight='bold', fontsize=12)
-        
-        ax.set_title('PromptSage Optimization Process', fontsize=20, fontweight='bold')
-        
-        plt.savefig(os.path.join(output_dir, "12_optimization_process.png"), dpi=300, bbox_inches='tight')
-        plt.close()
-    
-    # 13. Ablation Study Results
+    # 11. Ablation Study Results
     def plot_ablation_study():
         components = list(data["ablation_results"].keys())
         values = list(data["ablation_results"].values())
         
         fig, ax = plt.subplots(figsize=(12, 6))
-        bars = ax.bar(components, values, color=colors[:len(components)])
+        bars = ax.bar(components, values)
         
         # Add value labels
         for bar, value in zip(bars, values):
             height = bar.get_height()
             ax.text(bar.get_x() + bar.get_width()/2., height + 0.01,
-                  f'{value:.4f}', ha='center', va='bottom', fontsize=12, fontweight='bold')
+                  f'{value:.4f}', ha='center', va='bottom')
         
         ax.set_xlabel("System Configuration")
         ax.set_ylabel("Average Improvement")
-        ax.set_title("Ablation Study Results", fontweight='bold', fontsize=18)
+        ax.set_title("Ablation Study Results")
         ax.grid(axis='y', linestyle='--', alpha=0.7)
         plt.xticks(rotation=30, ha='right')
         
-        plt.savefig(os.path.join(output_dir, "13_ablation_study.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "11_ablation_study.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 14. Multi-Model Performance Comparison
+    # 12. Multi-Model Performance Comparison
     def plot_multi_model_comparison():
         models = ["GPT-Neo-1.3B", "GPT-J-6B", "Falcon-1B", "Mistral-1B"]
         strategies = ["Evolution", "Meta-Learning", "Contrastive"]
@@ -852,21 +692,21 @@ def generate_all_visualizations(data, output_dir):
             data_matrix, 
             annot=True, 
             fmt=".4f", 
-            cmap="viridis", 
             xticklabels=strategies,
             yticklabels=models,
             linewidths=0.5,
             ax=ax
         )
         
-        ax.set_title("Performance Across Different LLMs", fontweight='bold', fontsize=18)
-        ax.set_xlabel("Strategy", fontsize=14)
-        ax.set_ylabel("Model", fontsize=14)
+        ax.set_title("Performance Across Different LLMs")
+        ax.set_xlabel("Strategy")
+        ax.set_ylabel("Model")
         
-        plt.savefig(os.path.join(output_dir, "14_multi_model_comparison.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "12_multi_model_comparison.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 15. Word Clouds Comparison
+    # 13. Word Clouds Comparison
     def plot_word_clouds():
         try:
             from wordcloud import WordCloud
@@ -882,22 +722,22 @@ def generate_all_visualizations(data, output_dir):
             
             # Original prompt word cloud
             wordcloud1 = WordCloud(width=800, height=400, background_color='white', 
-                                 colormap='Blues', max_words=50).generate(orig_text)
+                                 max_words=50).generate(orig_text)
             
             ax1.imshow(wordcloud1, interpolation='bilinear')
             ax1.axis('off')
-            ax1.set_title('Original Prompt', fontsize=18, fontweight='bold')
+            ax1.set_title('Original Prompt')
             
             # Optimized prompt word cloud
             wordcloud2 = WordCloud(width=800, height=400, background_color='white', 
-                                 colormap='viridis', max_words=50).generate(opt_text)
+                                 max_words=50).generate(opt_text)
             
             ax2.imshow(wordcloud2, interpolation='bilinear')
             ax2.axis('off')
-            ax2.set_title('Optimized Prompt', fontsize=18, fontweight='bold')
+            ax2.set_title('Optimized Prompt')
             
-            plt.tight_layout()
-            plt.savefig(os.path.join(output_dir, "15_word_clouds.png"), dpi=300, bbox_inches='tight')
+            plt.tight_layout(pad=2.0)
+            plt.savefig(os.path.join(output_dir, "13_word_clouds.png"), dpi=300, bbox_inches='tight')
             plt.close()
         except ImportError:
             # If wordcloud not available, create a text comparison visual
@@ -908,15 +748,15 @@ def generate_all_visualizations(data, output_dir):
             ax.axis('off')
             
             # Title
-            ax.text(0.5, 0.95, "Word Usage Comparison", ha='center', fontsize=20, fontweight='bold')
+            ax.text(0.5, 0.95, "Word Usage Comparison", ha='center')
             
             # Original prompt content
-            ax.text(0.25, 0.85, "Original Prompt", ha='center', fontsize=16, fontweight='bold')
-            ax.text(0.25, 0.8, example["original_prompt"], ha='center', fontsize=12, wrap=True)
+            ax.text(0.25, 0.85, "Original Prompt", ha='center')
+            ax.text(0.25, 0.8, example["original_prompt"], ha='center', wrap=True)
             
             # Optimized prompt content
-            ax.text(0.75, 0.85, "Optimized Prompt", ha='center', fontsize=16, fontweight='bold')
-            ax.text(0.75, 0.8, example["optimized_prompt"], ha='center', fontsize=12, wrap=True)
+            ax.text(0.75, 0.85, "Optimized Prompt", ha='center')
+            ax.text(0.75, 0.8, example["optimized_prompt"], ha='center', wrap=True)
             
             # Word statistics
             orig_words = set(example["original_prompt"].lower().split())
@@ -926,21 +766,22 @@ def generate_all_visualizations(data, output_dir):
             added_words = opt_words - orig_words
             
             # Original word count
-            ax.text(0.25, 0.5, f"Word Count: {len(example['original_prompt'].split())}", ha='center', fontsize=14)
+            ax.text(0.25, 0.5, f"Word Count: {len(example['original_prompt'].split())}", ha='center')
             
             # Optimized word count
-            ax.text(0.75, 0.5, f"Word Count: {len(example['optimized_prompt'].split())}", ha='center', fontsize=14)
+            ax.text(0.75, 0.5, f"Word Count: {len(example['optimized_prompt'].split())}", ha='center')
             
             # Added words
-            ax.text(0.5, 0.4, "Key Words Added:", ha='center', fontsize=16, fontweight='bold')
+            ax.text(0.5, 0.4, "Key Words Added:", ha='center')
             
             added_text = ", ".join(list(added_words)[:10])
-            ax.text(0.5, 0.35, added_text, ha='center', fontsize=12, wrap=True)
+            ax.text(0.5, 0.35, added_text, ha='center', wrap=True)
             
-            plt.savefig(os.path.join(output_dir, "15_word_comparison.png"), dpi=300, bbox_inches='tight')
+            plt.tight_layout(pad=1.5)
+            plt.savefig(os.path.join(output_dir, "13_word_comparison.png"), dpi=300, bbox_inches='tight')
             plt.close()
     
-    # 16. Prompt Pattern Effectiveness
+    # 14. Prompt Pattern Effectiveness
     def plot_pattern_effectiveness():
         # Pattern effectiveness data (made up)
         patterns = [
@@ -964,20 +805,21 @@ def generate_all_visualizations(data, output_dir):
         effectiveness = [x[1] for x in sorted_data]
         
         fig, ax = plt.subplots(figsize=(12, 8))
-        bars = ax.barh(patterns, effectiveness, color=colors[:len(patterns)])
+        bars = ax.barh(patterns, effectiveness)
         
         # Add value labels
         for i, (value, bar) in enumerate(zip(effectiveness, bars)):
-            ax.text(value + 0.01, i, f'{value:.4f}', va='center', fontweight='bold')
+            ax.text(value + 0.01, i, f'{value:.4f}', va='center')
         
         ax.set_xlabel("Average Improvement")
-        ax.set_title("Prompt Transformation Pattern Effectiveness", fontweight='bold', fontsize=18)
+        ax.set_title("Prompt Transformation Pattern Effectiveness")
         ax.grid(axis='x', linestyle='--', alpha=0.7)
         
-        plt.savefig(os.path.join(output_dir, "16_pattern_effectiveness.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "14_pattern_effectiveness.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 17. Perplexity Reduction Before/After
+    # 15. Perplexity Reduction Before/After
     def plot_perplexity_reduction():
         # Generate perplexity data for multiple examples
         examples = list(range(1, 11))
@@ -995,28 +837,28 @@ def generate_all_visualizations(data, output_dir):
         fig, ax = plt.subplots(figsize=(12, 6))
         
         # Plot original perplexity
-        ax.plot(examples, before_perplexity, marker='o', linewidth=2, color=colors[0], label='Original Prompt')
+        ax.plot(examples, before_perplexity, marker='o', label='Original Prompt')
         
         # Plot optimized perplexity
-        ax.plot(examples, after_perplexity, marker='s', linewidth=2, color=colors[1], label='Optimized Prompt')
+        ax.plot(examples, after_perplexity, marker='s', label='Optimized Prompt')
         
         # Add reduction percentage labels
         for i, (before, after) in enumerate(zip(before_perplexity, after_perplexity)):
             reduction_pct = (before - after) / before * 100
-            ax.text(examples[i], after - 0.5, f"-{reduction_pct:.1f}%", ha='center', va='top', 
-                   fontsize=10, fontweight='bold')
+            ax.text(examples[i], after - 0.5, f"-{reduction_pct:.1f}%", ha='center', va='top')
         
         ax.set_xlabel("Example")
         ax.set_ylabel("Perplexity (lower is better)")
-        ax.set_title("Perplexity Reduction After Prompt Optimization", fontweight='bold', fontsize=18)
+        ax.set_title("Perplexity Reduction After Optimization")
         ax.set_xticks(examples)
         ax.legend()
         ax.grid(True, linestyle='--', alpha=0.7)
         
-        plt.savefig(os.path.join(output_dir, "17_perplexity_reduction.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "15_perplexity_reduction.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 18. Cross-Task Transfer Analysis
+    # 16. Cross-Task Transfer Analysis
     def plot_cross_task_transfer():
         # Task categories and source/target performance
         tasks = ["Explanation", "Creative", "Factual", "Comparison", "Coding"]
@@ -1038,21 +880,21 @@ def generate_all_visualizations(data, output_dir):
             transfer_matrix, 
             annot=True, 
             fmt=".4f", 
-            cmap="viridis", 
             xticklabels=tasks,
             yticklabels=tasks,
             linewidths=0.5,
             ax=ax
         )
         
-        ax.set_title("Cross-Task Transfer Performance", fontweight='bold', fontsize=18)
-        ax.set_xlabel("Target Task", fontsize=14)
-        ax.set_ylabel("Source Task", fontsize=14)
+        ax.set_title("Cross-Task Transfer Performance")
+        ax.set_xlabel("Target Task")
+        ax.set_ylabel("Source Task")
         
-        plt.savefig(os.path.join(output_dir, "18_cross_task_transfer.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "16_cross_task_transfer.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 19. Learning Curve Analysis
+    # 17. Learning Curve Analysis
     def plot_learning_curve():
         # Learning curve data - improvement vs. training examples
         training_sizes = [10, 50, 100, 200, 500, 1000]
@@ -1063,13 +905,13 @@ def generate_all_visualizations(data, output_dir):
         fig, ax = plt.subplots(figsize=(10, 6))
         
         # Plot learning curves
-        ax.plot(training_sizes, evolution_perf, marker='o', linewidth=2, label='Evolution', color=colors[0])
-        ax.plot(training_sizes, meta_perf, marker='s', linewidth=2, label='Meta-Learning', color=colors[1])
-        ax.plot(training_sizes, contrastive_perf, marker='^', linewidth=2, label='Contrastive', color=colors[2])
+        ax.plot(training_sizes, evolution_perf, marker='o', label='Evolution')
+        ax.plot(training_sizes, meta_perf, marker='s', label='Meta-Learning')
+        ax.plot(training_sizes, contrastive_perf, marker='^', label='Contrastive')
         
         ax.set_xlabel("Number of Training Examples")
         ax.set_ylabel("Average Improvement")
-        ax.set_title("Learning Curves by Optimization Strategy", fontweight='bold', fontsize=18)
+        ax.set_title("Learning Curves by Strategy")
         ax.legend()
         ax.grid(True, linestyle='--', alpha=0.7)
         
@@ -1078,10 +920,11 @@ def generate_all_visualizations(data, output_dir):
         ax.set_xticks(training_sizes)
         ax.get_xaxis().set_major_formatter(plt.ScalarFormatter())
         
-        plt.savefig(os.path.join(output_dir, "19_learning_curves.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "17_learning_curves.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
-    # 20. Response Quality Assessment
+    # 18. Response Quality Assessment
     def plot_response_quality():
         # Response quality metrics
         metrics = ["Relevance", "Coherence", "Informativeness", "Clarity", "Completeness"]
@@ -1103,28 +946,27 @@ def generate_all_visualizations(data, output_dir):
         fig, ax = plt.subplots(figsize=(12, 6))
         
         # Create grouped bars
-        rects1 = ax.bar(x - width/2, before_scores, width, label='Original Prompt', color=colors[0])
-        rects2 = ax.bar(x + width/2, after_scores, width, label='Optimized Prompt', color=colors[1])
+        rects1 = ax.bar(x - width/2, before_scores, width, label='Original Prompt')
+        rects2 = ax.bar(x + width/2, after_scores, width, label='Optimized Prompt')
         
         # Add improvement percentage labels
         for i, (before, after) in enumerate(zip(before_scores, after_scores)):
             improvement = (after - before) / before * 100
-            ax.text(i, after + 0.02, f"+{improvement:.1f}%", ha='center', va='bottom', 
-                   fontsize=10, fontweight='bold')
+            ax.text(i, after + 0.02, f"+{improvement:.1f}%", ha='center', va='bottom')
         
         ax.set_xlabel("Response Quality Metric")
         ax.set_ylabel("Score")
-        ax.set_title("Response Quality Before and After Optimization", fontweight='bold', fontsize=18)
+        ax.set_title("Response Quality Before and After Optimization")
         ax.set_xticks(x)
         ax.set_xticklabels(metrics)
         ax.legend()
         ax.grid(axis='y', linestyle='--', alpha=0.7)
         
-        plt.savefig(os.path.join(output_dir, "20_response_quality.png"), dpi=300, bbox_inches='tight')
+        plt.tight_layout(pad=1.5)
+        plt.savefig(os.path.join(output_dir, "18_response_quality.png"), dpi=300, bbox_inches='tight')
         plt.close()
     
     # Generate all visualizations
-    plot_system_architecture()
     plot_strategy_performance()
     plot_training_progress()
     plot_metric_improvements()
@@ -1135,7 +977,6 @@ def generate_all_visualizations(data, output_dir):
     plot_task_distribution()
     plot_prompt_lengths()
     plot_example_analysis()
-    plot_optimization_process()
     plot_ablation_study()
     plot_multi_model_comparison()
     plot_word_clouds()
@@ -1145,7 +986,7 @@ def generate_all_visualizations(data, output_dir):
     plot_learning_curve()
     plot_response_quality()
     
-    print(f"Generated 20 research-quality visualizations in {output_dir}")
+    print(f"Generated 18 research-quality visualizations in {output_dir}")
 
 # Main execution
 if __name__ == "__main__":
