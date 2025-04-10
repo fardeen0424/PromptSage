@@ -61,19 +61,19 @@ if torch.cuda.is_available():
     torch.cuda.manual_seed_all(SEED)
 
 # Create custom colormap for visualizations
-promptsage_colors = ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"]
-promptsage_cmap = LinearSegmentedColormap.from_list("promptsage", promptsage_colors)
+promptsage_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+promptsage_cmap = plt.cm.viridis  # Use built-in viridis colormap
 
 # Configure Matplotlib
 plt.style.use('seaborn-v0_8-whitegrid')
-plt.rcParams['font.family'] = 'DejaVu Sans'
+plt.rcParams['font.family'] = 'Arial'
 plt.rcParams['font.size'] = 12
 plt.rcParams['axes.titlesize'] = 16
 plt.rcParams['axes.labelsize'] = 14
 plt.rcParams['xtick.labelsize'] = 12
 plt.rcParams['ytick.labelsize'] = 12
 plt.rcParams['legend.fontsize'] = 12
-plt.rcParams['figure.titlesize'] = 20
+plt.rcParams['figure.titlesize'] = 16
 
 # Configure argument parser
 def parse_args():
@@ -352,32 +352,38 @@ def load_model(model_name, device, memory_efficient=True):
     """Load language model for evaluation."""
     print(f"\n=== Loading Model: {model_name} ===")
     
-    # Always use smaller model for stability
-    model_name = "distilgpt2"
-    print(f"Using {model_name} for stability")
+    # Use a 1B parameter model
+    model_name = "EleutherAI/gpt-neo-1.3B"  # This is ~1.3B parameters
+    print(f"Using {model_name} for evaluation")
     
     try:
         # Load tokenizer
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         
         if memory_efficient:
-            # Configure for memory efficiency
+            # Configure for memory efficiency with larger model
             model = AutoModelForCausalLM.from_pretrained(
                 model_name,
                 low_cpu_mem_usage=True,
                 torch_dtype=torch.float16 if device.type == "cuda" else torch.float32,
+                device_map="auto" if device.type == "cuda" else None,
             )
         else:
             model = AutoModelForCausalLM.from_pretrained(model_name)
             
-        model = model.to(device)
+        if not hasattr(model, "device_map"):
+            model = model.to(device)
         
         print(f"Model loaded successfully on {device}")
         return model, tokenizer
         
     except Exception as e:
         print(f"Error loading model: {e}")
-        raise
+        # Fall back to smaller model if 1B model fails
+        print("Falling back to smaller model (distilgpt2)...")
+        tokenizer = AutoTokenizer.from_pretrained("distilgpt2")
+        model = AutoModelForCausalLM.from_pretrained("distilgpt2").to(device)
+        return model, tokenizer
 
 def train_meta_optimizer(training_data, model, tokenizer, args, device):
     """Train the meta-learning optimizer on prepared data."""
@@ -1450,6 +1456,12 @@ def generate_improvement_examples(results, viz_dir):
 def main():
     # Parse command line arguments
     args = parse_args()
+    
+    # Optimize settings for 1B model
+    args.memory_efficient = True
+    args.train_samples = min(args.train_samples, 100)  # Limit samples
+    args.eval_samples = min(args.eval_samples, 30)     # Limit evaluation
+    args.iterations = min(args.iterations, 2)          # Limit iterations
     
     # Set up environment
     device = setup_environment(args)
